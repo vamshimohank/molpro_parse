@@ -7,24 +7,25 @@ import numpy as np
 cminv=219474.63068
 au_to_cminv= cminv
 
+molpro_file='Example/m7_soc.xml'
 
-m = rme('SOC_OUT/m7_SOC.xml')
+m = rme('Example/m7_SOC.xml')
 
 diag_e = np.array(m['reference Energies'])
 
 cf_h = np.diag(diag_e-np.min(diag_e)) * au_to_cminv
 #print(cf_h)
 
-LSOP,soc_e = read_lsop_socE('SOC_OUT/m7_soc.out')
+LSOP,soc_e = read_lsop_socE(molpro_file)
 
 #print(type(LSOP))
 #print(LSOP9x9)
 
-LSZ=LS_matrix_elements_xml('SOC_OUT/m7_SOC.xml','LSZ')
+LSZ=LS_matrix_elements_xml(molpro_file,'LSZ')
 LSOP_1_1_ex=LSZ+cf_h
 
-LSX=LS_matrix_elements_xml('SOC_OUT/m7_SOC.xml','LSX')
-LSY=LS_matrix_elements_xml('SOC_OUT/m7_SOC.xml','LSY')
+LSX=LS_matrix_elements_xml(molpro_file,'LSX')
+LSY=LS_matrix_elements_xml(molpro_file,'LSY')
 
 LSXY=LSX+LSY
 LSXZ=LSX-LSZ

@@ -13,11 +13,11 @@
 #filename = sys.argv[1]
 #typ = sys.argv[2]
 
-filename = 'tm.out'
-typ='rixs_cas'
+#filename = 'tm.out'
+#typ='rixs_cas'
 
-f = open(filename).readlines()                     # read Molpro output file
-tst = open('abs_cross.txt','w')
+#f = open(filename).readlines()                     # read Molpro output file
+#tst = open('abs_cross.txt','w')
 
 def read_wfc(f,write_files=False):
     import numpy as np
@@ -192,8 +192,6 @@ def read_lsop_socE(filename,write_files=False):
                 for nc in range(n_states):
                     prnt += str(LSOP[ns].real[nr, nc]) + "+I(" + str(
                         LSOP[ns][nr][nc].imag) + ") "  # normal output, same way as in molpro
-                #            prnt += str("%11f"%LSOP[ns][nr][nc].real)+str("+I(%11f) "%LSOP[ns].imag[nr,nc]) # normal output, same way as in molpro (other format(?))
-                #            prnt += str("%11f"%LSOP[ns].real[nc,nr])+str("+I(%11f) "%LSOP[ns].imag[nc,nr]) # transposed output, WFs in rows
 
                 print(prnt, file=lsop_out)
             lsop_out.close()
@@ -236,13 +234,9 @@ def read_noci_tm(f,write_files=False):
 
     for nN in range(len(NOCIstart_line)):
         for lin in f[NOCIstart_line[nN]:NOCIend_line[nN]]:
-            #print(lin)
             for char in ['<', '>', '|']:
                 lin = lin.replace(char, ' ')
-                #print(lin)
-            #print(lin)
             if lin[0] != '\n' and lin.split()[0] == '!MRCI' and lin.split()[3] == 'H':
-                #print(lin)
                 dN = max(dN, float(lin.split()[2]), float(lin.split()[4]))
         dN = int(dN - 0.1)
         dNCI.append(dN)
@@ -267,28 +261,19 @@ def read_noci_tm(f,write_files=False):
                 if lin.split()[3] == 'DMX':
                     D[0][nN][int(float(lin.split()[2])) - 1][int(float(lin.split()[4])) - 1] = lin.split()[
                         5]  # save matrix element
-                #                if D[0][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]==0 :             # if trere is no transpose-congugate ME
-                #                    D[0][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]=lin.split()[5]  # write this matrix element also there
                 elif lin.split()[3] == 'DMY':
                     D[1][nN][int(float(lin.split()[2])) - 1][int(float(lin.split()[4])) - 1] = lin.split()[5]
-                #                if D[1][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]==0 :
-                #                    D[1][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]=lin.split()[5]
                 elif lin.split()[3] == 'DMZ':
                     D[2][nN][int(float(lin.split()[2])) - 1][int(float(lin.split()[4])) - 1] = lin.split()[5]
-                #                if D[2][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]==0 :
-                #                    D[2][nN][int(float(lin.split()[4]))-1][int(float(lin.split()[2]))-1]=lin.split()[5]
                 else:
                     print('Something is wrong !MRCI <i.1|DM_|j.1> lines, at line:', lin)
         if write_files :
             for item in D[0][nN]:
-                #print >> fileDX, item[0], " ".join(map(str, item[1:]))
                 print(item[0], " ".join(map(str, item[1:])),file=fileDX)
             for item in D[1][nN]:
                 print(item[0], " ".join(map(str, item[1:])),file=fileDY)
-                #print >> fileDY, item[0], " ".join(map(str, item[1:]))
             for item in D[2][nN]:
                 print(item[0], " ".join(map(str, item[1:])),file=fileDZ)
-                #print >> fileDZ, item[0], " ".join(map(str, item[1:]))
     return D
 
 def read_mrci_energies(file_name):
@@ -315,16 +300,10 @@ def read_mrci_energies(file_name):
 
                         if li[0] != '\n':
                             if i <= nstates :
-                                #print(i, li)
-                            #print(li.split()[0])
-                        #     if i <= nstates :
                                 ref_energies.append(float(li.split()[1]))
                             else :
                                 ref_energies=np.array(ref_energies)
 
-                                #print(type(ref_energies))
-                                #break
-                                #print(li)
                                 if '!MRCI STATE ' in li and 'Energy' in li :
                                     mrci_energies.append(float(li.split()[4]))
                                 if 'Davidson, fixed reference' in li :

@@ -19,6 +19,15 @@
 #f = open(filename).readlines()                     # read Molpro output file
 #tst = open('abs_cross.txt','w')
 
+def split(array, nrows, ncols):
+    """Split a matrix into sub-matrices."""
+
+    r, h = array.shape
+    return (array.reshape(h//nrows, nrows, -1, ncols)
+                 .swapaxes(1, 2)
+                 .reshape(-1, nrows, ncols))
+
+
 def read_wfc(f,write_files=False):
     import numpy as np
     wfc_lookup = 'Eigenvectors of spin-orbit matrix'
@@ -96,6 +105,51 @@ def read_wfc(f,write_files=False):
 
     return nstates,WF
 
+def lsop_read_mod(filename,write_files=False):
+    import numpy as np
+
+    f = open(filename).readlines()
+
+
+    for num1, line in enumerate(f):  # Find all the blocks we want to extract
+        if 'VMK spin-orbit matrix (cm-1)' in line:
+            LSOPstart_line=num1 + 3  # Start of the Spin-Orbit Matrix data
+            LSOPlines = True
+        #        print('Found LSOP at line', num1)
+            #print(LSOPstart_line)
+        if 'No symmetry adaption' in line and LSOPlines == True:
+            LSOPend_line = num1 - 1  # End of the Spin-Orbit Matrix data
+            #LSOPlines = False
+            #print(LSOPend_line)
+
+        if 'Eigenvectors of spin-orbit matrix' in line:
+            WFstart_line=num1 + 7
+
+    nstates=int(f[WFstart_line - 10][0:4])
+    #print(nstates)
+    SOC_E = np.zeros(nstates,dtype=float)
+
+    for n in range(LSOPend_line + 9, WFstart_line - 9):
+        SOC_E[int(f[n].split()[0]) - 1] = float(f[n].split()[1])  # *hartree
+        if write_files:
+            print(SOC_E[ns][int(f[n].split()[0]) - 1], file=socE_out)
+    bra=[]
+    ket=[]
+    braS=[]
+    braMs=[]
+    ket={}
+    LSOP=np.zeros((nstates,nstates),dtype=np.complex128)
+    for num1, line in enumerate(f):  # Find all the blocks we want to extract
+        if num1 >= LSOPstart_line and num1 <= LSOPend_line and line != '\n' :
+            #print(line.split()[0])
+            bra=int(line.split()[0])
+            ket=int(line.split()[10])
+            LSOP[bra-1][ket-1]+=np.complex(float(line.split()[11]),float(line.split()[13]))
+    return LSOP,SOC_E
+
+
+
+
 def read_lsop_socE(filename,write_files=False):
     import numpy as np
 
@@ -119,6 +173,7 @@ def read_lsop_socE(filename,write_files=False):
         if 'No symmetry adaption' in line and LSOPlines == True:
             LSOPend_line.append(num1 - 2)  # End of the Spin-Orbit Matrix data
             LSOPlines = False
+            print(LSOPend_line)
     # if LSOPlines==True or WFlines==True or  NOCIlines==True :
     #if LSOPlines == True or NOCIlines == True:
     #     print('One of the blocks has start, but has no end')
@@ -174,17 +229,18 @@ def read_lsop_socE(filename,write_files=False):
             for n in range(LSOPstart_line[ns] + nbl * lop_block_rows + nbl * lop_block_gap,
                            LSOPstart_line[ns] + (nbl + 1) * lop_block_rows + nbl * lop_block_gap):
                 if f[n] != '\n' and f[n] != ' \n':  # not to consider empty lines
-                    if f[n][
-                        2] != ' ':  # rows with real parts also contain No, and (j, mj) information (only No is now used)
+                    if f[n][2] != ' ':  # rows with real parts also contain No, and (j, mj) information (only No is now used)
                         for col in range(0, lsop_block_col_size):
                             LSOP[ns][int(f[n].split()[0]) - 1][col + nbl * lsop_bcs_d] = complex(
                                 float(f[n][19 + 11 * col:30 + +11 * col]),
                                 0)  # select only relevant part of the line and read
                     else:  # rows with imaginary parts have spaces in the beginning
                         for col in range(0, lsop_block_col_size):
+#                            print(LSOP[ns]) #[int(f[n-1])])
+                            print(n-1,f[n - 1].split())
                             LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] = \
-                            LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] + complex(0, float(f[n][
-                                                                                                              19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number
+                            LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] + \
+                            complex(0, float(f[n][19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number
         #
         if write_files :
             for nr in range(n_states):  # print to file

@@ -17,6 +17,8 @@ m = rme('Example/all_r9.xml')
 
 diag_e = np.array(m['reference Energies'])
 
+print(diag_e)
+
 cf_h = np.diag(diag_e-np.min(diag_e)) * au_to_cminv
 #print(cf_h)
 
@@ -58,7 +60,7 @@ print(m6_LSOP_s.shape,m4_LSOP_s.shape,m2_LSOP_s.shape,m0_LSOP_s.shape)
 # # fac=LSOP_s[0]/LSOP_s[8]
 # # print(fac[0])
 #
-n_sub_mat=24
+n_sub_mat=8
 print(m6_LSOP_s[0].shape)
 #
 k=0

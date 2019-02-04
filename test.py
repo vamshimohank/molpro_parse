@@ -50,10 +50,10 @@ print(m6lsop.shape,m4lsop.shape,m2lsop.shape,m0lsop.shape)
 # print(LSOP.shape)
 # #print(LSOP)
 m6_LSOP_s=np.array(split(m6lsop,9,9))
-m4_LSOP_s=np.array(split(m4lsop,9,9))
+m4_LSOP_s=np.array(split(m4lsop, 9, 9))
 m2_LSOP_s=np.array(split(m2lsop,9,9))
 m0_LSOP_s=np.array(split(m0lsop,9,9))
-print(m6_LSOP_s.shape,m4_LSOP_s.shape,m2_LSOP_s.shape,m0_LSOP_s.shape)
+print(m6_LSOP_s.shape, m4_LSOP_s.shape, m2_LSOP_s.shape, m0_LSOP_s.shape)
 #
 # # print(np.array(LSOP_s[1]).shape)
 # # print(np.all(LSOP_s==np.complex(0.0,0.0)))
@@ -61,23 +61,24 @@ print(m6_LSOP_s.shape,m4_LSOP_s.shape,m2_LSOP_s.shape,m0_LSOP_s.shape)
 # # print(fac[0])
 #
 n_sub_mat=8
-print(m6_LSOP_s[0].shape)
+LSOP_s=m2_LSOP_s
+print(LSOP_s[0].shape)
 #
 k=0
-for j in range(len(m6_LSOP_s[0])):
+for j in range(len(LSOP_s[0])):
     k+=1
-    for i in range(len(m6_LSOP_s[0])):
+    for i in range(len(LSOP_s[0])):
         #if LSOP_s[n_sub_mat][i][j].imag != 0:
             print("%2d %2d %8.3f +( %8.3f j) %2d %2d %8.3f +( %8.3f j) %8.3f %8.3f"
-                  %(i+1,j+1,
-                    m6_LSOP_s[0][i][j].real,
-                    m6_LSOP_s[0][i][j].imag,
-                    i+1+9*n_sub_mat,
-                    j+1+9*n_sub_mat,
-                    m6_LSOP_s[n_sub_mat][i][j].real,
-                    m6_LSOP_s[n_sub_mat][i][j].imag,
-                    m6_LSOP_s[0][i][j].real/m6_LSOP_s[n_sub_mat][i][j].real,
-                    m6_LSOP_s[0][i][j].imag/m6_LSOP_s[n_sub_mat][i][j].imag))
+                  % (i + 1, j + 1,
+                     LSOP_s[0][i][j].real,
+                     LSOP_s[0][i][j].imag,
+                     i + 1 + 9 * n_sub_mat,
+                     j + 1 + 9 * n_sub_mat,
+                     LSOP_s[n_sub_mat][i][j].real,
+                     LSOP_s[n_sub_mat][i][j].imag,
+                     LSOP_s[0][i][j].real / LSOP_s[n_sub_mat][i][j].real,
+                     LSOP_s[0][i][j].imag / LSOP_s[n_sub_mat][i][j].imag))
             k+=1
 
 #LSOP_1_1  = LSOP[0][0: 9:1, 0: 9:1]

@@ -116,17 +116,17 @@ def lsop_read_mod(filename,write_files=False):
             LSOPstart_line=num1 + 3  # Start of the Spin-Orbit Matrix data
             LSOPlines = True
         #        print('Found LSOP at line', num1)
-            print(LSOPstart_line)
+        #     print(LSOPstart_line)
 
         if 'No symmetry adaption' in line and LSOPlines == True:
             LSOPend_line = num1 - 1  # End of the Spin-Orbit Matrix data
-            print('LSOPend_line=',LSOPend_line)
+            # print('LSOPend_line=',LSOPend_line)
         if 'Spin-orbit eigenstates' in line and LSOPlines == True:
             if 'No symmetry adaption' in f[num1-3] :
                 continue
             else:
                 LSOPend_line = num1 - 3  # End of the Spin-Orbit Matrix data
-                print('LSOPend_line=',LSOPend_line)
+                # print('LSOPend_line=',LSOPend_line)
 
         if 'Nr         E' in line :
             soc_e_start_line=num1 + 2
@@ -134,7 +134,7 @@ def lsop_read_mod(filename,write_files=False):
         if 'Eigenvectors of spin-orbit matrix' in line:
             if '=====' in f[num1+1]:
                 WFstart_line=num1 + 7
-                print(WFstart_line)
+                # print(WFstart_line)
 
     nstates=int(f[WFstart_line - 10][0:4])
     #print(nstates)

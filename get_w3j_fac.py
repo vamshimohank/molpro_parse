@@ -14,11 +14,13 @@ def get_w3j_fac(filename):
     # m = rme(molpro_file)
 
     LSOP,SOC_E = lsop_read_mod(molpro_file)
+    print(LSOP.shape)
+    m6lsop = LSOP[  0: 63:1,   0: 63:1]  # 2S=6 part of the SOC matrix shape(63,63)
+    m4lsop = LSOP[ 63:108:1,  63:108:1]  # 2S=4 part of the SOC matrix shape(45,45)
+    m2lsop = LSOP[108:135:1, 108:135:1]  # 2S=2 part of the SOC matrix shape(27,27)
+    m0lsop = LSOP[135:144:1, 135:144:1]  # 2S=0 part of the SOC matrix shape(9,9)
 
-    m6lsop = LSOP[0: 63:1, 0: 63:1]     # 2S=6 part of the SOC matrix shape(63,63)
-    m4lsop = LSOP[63:108:1, 63:108:1]   # 2S=4 part of the SOC matrix shape(45,45)
-    m2lsop = LSOP[108:135:1, 108:135:1] # 2S=2 part of the SOC matrix shape(27,27)
-    m0lsop = LSOP[135:144:1, 135:144:1] # 2S=0 part of the SOC matrix shape(9,9)
+   m6_m4_lsop = LSOP[]
 
     # split each Spin Multiplet into blocks of 9 states
     m6_LSOP_r9 = np.array(split(m6lsop, 9, 9))
@@ -54,7 +56,9 @@ def build_LSOP_from_LS_mat_elem(molpro_file):
 # LSY=LS_matrix_elements_xml(molpro_file,'LSY')
 
 #get_w3j_fac('all_r9.xml')
-LSZ=build_LSOP_from_LS_mat_elem('all_r9.xml')
-for i in range(len(LSZ)):
-        for j in range(len(LSZ)):
-            print("%d %d %8.3f %8.3f" % (i,j,LSZ[j][j].real,LSZ[i,j].imag))
+# LSZ=build_LSOP_from_LS_mat_elem('all_r9.xml')
+# for i in range(len(LSZ)):
+#         for j in range(len(LSZ)):
+#             print("%d %d %8.3f %8.3f" % (i,j,LSZ[j][j].real,LSZ[i,j].imag))
+
+get_w3j_fac('Example/cas_soc_m/all_r9.xml')

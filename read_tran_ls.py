@@ -82,6 +82,50 @@ def LS_tran_mat_elem(file,lstype,S):
     #print(so_mat)
     return so_mat
 
+
+def get_LS_mat_for_given_S(S,nstates,LSX,LSY,LSZ,w3j):
+
+    """
+
+    :param S: Spin of the system
+    :param nstates: # of states
+    :param file_prefix: prefix of the files containing the
+    component of the matrix elements (3 different files)
+    :wfac  w3j factors 2D list
+    :return:
+    """
+
+    import numpy as np
+    from read_molpro import split
+    from read_molpro import read_mrci_energies as rme
+
+    from read_molpro import LS_matrix_elements_xml as LSMX
+    from read_molpro import lsop_read_mod
+
+    #nstates = 9
+    #S = 1
+
+
+    M = 2 * S + 1
+    a = w3j[0]
+    b = w3j[1]
+    LSXY = LSX+LSY
+
+    LSOP_ex_n = np.zeros((M * nstates, M * nstates), dtype=np.complex128)
+
+    for l in range(M):
+        if l == S:
+            #LSOP_ex_n[l * 9:(l + 1) * 9, l * 9:(l + 1) * 9] += cf_h
+            continue
+        else:
+            LSOP_ex_n[l * nstates:(l + 1) * nstates, l * nstates:(l + 1) * nstates] = LSZ / a[l]
+
+    for i in range(M - 1):
+        LSOP_ex_n[(i + 1) * nstates:(i + 2) * nstates, i * nstates:(i + 1) * nstates] = LSXY / b[i]
+        LSOP_ex_n[i * nstates:(i + 1) * nstates, (i + 1) * nstates:(i + 2) * nstates] = -np.conj(LSXY) / b[i]
+
+    return LSOP_ex_n
+
 def get_diff(mat1,mat2):
 
     for j in range(len(mat1)):

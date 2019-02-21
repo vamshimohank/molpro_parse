@@ -3,14 +3,14 @@ import numpy.matlib
 import xml.etree.ElementTree as ET
 
 
-file = 'Example/LSZ/6666.xml'
+file = 'Example/LSY/ls_tran.xml'
 
 # Read nstates
-f = open(file).readlines()
-for num, line in enumerate(f):
-    if 'Wavefunction restored from record' in line:
-        nstates = int(line.split()[8][-1])
-        break
+# f = open(file).readlines()
+# for num, line in enumerate(f):
+#     if 'Wavefunction restored from record' in line:
+#         nstates = int(line.split()[8][-1])
+#         break
 nstates=9
 
 so_mat=numpy.matlib.zeros((nstates,nstates),dtype=np.complex128)

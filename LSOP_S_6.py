@@ -8,7 +8,7 @@ from read_molpro import lsop_read_mod
 from read_tran_ls import *
 
 nstates = 9
-S = 1
+S = 2
 M = 2*S+1
 z_prefix=str(2*S)+str(2*S)+str(2*S)+str(2*S)+'.xml'
 xy_prefix=str(2*S)+str(2*S)+str(2*S-2)+str(2*S)+'.xml'

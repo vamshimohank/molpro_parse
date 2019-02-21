@@ -82,10 +82,29 @@ def LS_tran_mat_elem(file,lstype,S):
     #print(so_mat)
     return so_mat
 
-def get_diff(mat1,mat2):
+def get_diff_3(mat1,mat2,mat3):
+    print('mat1.shape',mat1.shape)
+    print('mat2.shape',mat2.shape)
+    print('mat3.shape',mat3.shape)
+    for j in range(mat1.shape[0]):
+        for i in range(mat1.shape[1]):
+            # if LSOP_s[n_sub_mat][i][j].imag != 0:
+            print("%2d %2d %8.3f +( %8.3f j) %8.3f +( %8.3f j) %8.3f %8.3f"
+                  % (i + 1, j + 1,
+                     mat1[i][j].real,
+                     mat1[i][j].imag,
+                     mat2[i][j].real,
+                     mat2[i][j].imag,
+                     mat3[i][j].real,
+                     mat3[i][j].imag))
+                     # mat1[i][j].real - mat2[i][j].real,
+                     # mat1[i][j].imag - mat2[i][j].imag))
 
-    for j in range(len(mat1)):
-        for i in range(len(mat1)):
+def get_diff(mat1,mat2):
+    print('mat1.shape',mat1.shape)
+    print('mat2.shape',mat2.shape)
+    for j in range(mat1.shape[0]):
+        for i in range(mat1.shape[1]):
             # if LSOP_s[n_sub_mat][i][j].imag != 0:
             print("%2d %2d %8.3f +( %8.3f j) %8.3f +( %8.3f j) %8.3f %8.3f"
                   % (i + 1, j + 1,
@@ -141,8 +160,9 @@ def get_fac(mat1,mat2,p=False):
 
 
 def print_mat(mat):
-    for i in range(len(mat)):
-        for j in range(len(mat)):
+    print('mat.shape',mat.shape)
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[1]):
             print("%d %d %8.4f %8.4f" %(i, j, mat[i][j].real, mat[i][j].imag))
 
 if __name__ == '__main__':

@@ -482,7 +482,19 @@ def read_mrci_energies(file_name):
                 if 'Number of optimized states:' in lin:
                     nstates = int(lin.split()[4])
                 if 'Reference symmetry:' in lin:
-                    multiplicity = int(lin.split()[2])
+                    mult_word = lin.split()[3]
+                    if mult_word == 'Singlet':
+                        multiplicity = 1
+                    if mult_word == 'Doublet':
+                        multiplicity = 2
+                    if mult_word == 'Triplet':
+                        multiplicity = 3
+                    if mult_word == 'Quartet':
+                        multiplicity = 4
+                    if mult_word == 'Septet':
+                        multiplicity = 7
+                    if mult_word == 'Quintet':
+                        multiplicity = 5
                 if 'State     Reference Energy' in lin:
                     ref_energies = []
                     mrci_energies = []

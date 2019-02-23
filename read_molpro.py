@@ -475,12 +475,14 @@ def read_mrci_energies(file_name):
     :return: multiplicity (int), nstates (int), ref_energies (numpy array), mrci_energies (numpy array), mrci_energies_davidson_fixed (numpy array), mrci_eneriges_davidson_relaxed (numpy array)
     """
     import numpy as np
+    f1=open(file_name, 'r')
+    flines=f1.readlines()
+    f1.close()
+    print(flines)
     f=open(file_name, 'r')
-    DF=False
-    DR=False
-    for line in f:
+    for n1, line in enumerate(f):
         if 'Multireference internally contracted CI' in line :
-            for lin  in f:
+            for n2, lin  in enumerate(f):
                 if 'Number of optimized states:' in lin:
                     nstates = int(lin.split()[4])
                 if 'Reference symmetry:' in lin:
@@ -502,8 +504,8 @@ def read_mrci_energies(file_name):
                     mrci_energies = []
                     mrci_energies_davidson_fixed = []
                     mrci_energies_davidson_relax = []
+                    mrci_energies_davidson_rotated = []
                     for i, li in enumerate(f):
-
                         if li[0] != '\n':
                             if i <= nstates :
                                 ref_energies.append(float(li.split()[1]))
@@ -512,23 +514,27 @@ def read_mrci_energies(file_name):
 
                                 if '!MRCI STATE ' in li and 'Energy' in li :
                                     mrci_energies.append(float(li.split()[4]))
-                                if 'Davidson, fixed reference' in li  and DF == True :
-                                    mrci_energies_davidson_fixed.append(float(li.split()[3]))
-                                    DF=True
-                                if 'Davidson, relaxed reference' in li and DF == True :
-                                    mrci_energies_davidson_relax.append(float(li.split()[3]))
-                                    DR=True
+                                # if 'orbital relaxation' in li :
+                                #     print(n1+n2+i,n1+n2+i+9,flines[n1+n2+i+9])
+                                # if 'Davidson, fixed reference' in li  :
+                                    mrci_energies_davidson_fixed.append(float(flines[n1+n2+i+9].split()[3]))
+                                # if 'Davidson, relaxed reference' in li :
+                                    mrci_energies_davidson_relax.append(float(flines[n1+n2+i+10].split()[3]))
+                                    mrci_energies_davidson_rotated.append(float(flines[n1+n2+i+11].split()[3]))
 
                     mrci_energies=np.array(mrci_energies)
                     mrci_energies_davidson_fixed = np.array(mrci_energies_davidson_fixed)
                     mrci_energies_davidson_relax = np.array(mrci_energies_davidson_relax)
+                    mrci_energies_davidson_rotated = np.array(mrci_energies_davidson_rotated)
 
-                    return {'multiplicity' : multiplicity, 'nstates' : nstates,
+                    E= {'multiplicity' : multiplicity, 'nstates' : nstates,
                             'reference Energies' : ref_energies,
                             'MRCI Energies' : mrci_energies,
                             'MRCI Energies with Davidson Fixed frame' : mrci_energies_davidson_fixed,
-                            'MRCI Energies with Davidson Relax frame' : mrci_energies_davidson_relax
+                            'MRCI Energies with Davidson Relax frame' : mrci_energies_davidson_relax,
+                            'MRCI Energies with Davidson Rotated frame' : mrci_energies_davidson_rotated
                             }
+                    return E
                     break
 
 #def read_mrci_energies_xml(file_name):
@@ -616,66 +622,22 @@ def LS_matrix_elements_xml(file,lstype,S):
     return so_mat
 
 if __name__ == '__main__':
-# file='SOC_XML/tranlsx.xml'
-# LS_matrix_elements(file,'ECPLSX')
-# file='SOC_XML/tranlsy.xml'
-# LS_matrix_elements(file,'ECPLSY')
-# file='SOC_XML/tranlsz.xml'
-# LS_matrix_elements(file,'ECPLSZ')
-#file='SOC_XML/lsop_mat.xml'
 
-# LSX=LS_matrix_elements('SOC_XML/lsop_mat_lsx.xml','LSX')
-# LSY=LS_matrix_elements('SOC_XML/lsop_mat_lsy.xml','LSY')
-# LSZ=LS_matrix_elements('SOC_XML/lsop_mat_lsz.xml','LSZ')
+    # import numpy as np
+    # LSOP,soc_e = lsop_read_mod('Example/all_r9.xml')
+    #
+    # LSOP9x9=LSOP[0:9:1,0:9:1]
+    # S=3.0
+    # LSZ=LS_matrix_elements_xml('Example/all_r9.xml','LSZ',S)
+    # for i in range(9):
+    #     for j in range(9):
+    #         if LSOP9x9[i,j].real-LSZ[i,j].real >0.4 or LSOP9x9[i,j].imag-LSZ[i,j].imag > 0.4:
+    #
+    #             print(i,j,'{:0.2f} {:0.2f}'.
+    #                   format(LSOP9x9[i,j].real-LSZ[i,j].real,
+    #                          LSOP9x9[i,j].imag-LSZ[i,j].imag))
 
-    import numpy as np
-    LSOP,soc_e = lsop_read_mod('Example/all_r9.xml')
-
-#print(type(LSOP))
-    LSOP9x9=LSOP[0:9:1,0:9:1]
-#print(LSOP9x9)
-    S=3.0
-    LSZ=LS_matrix_elements_xml('Example/all_r9.xml','LSZ',S)
-#print(LSZ)
-# for i in range(9):
-#     for j in range(9):
-#         print('<{:2d}|LSZ|{:2d}> = {:.2f}'.format(j+1,i+1,LSZ[j,i]),
-#               ' <{:2d}|LSZ|{:2d}> = {:.2f}'.format(j+1,i+1,LSOP9x9[j, i]))
-    for i in range(9):
-        for j in range(9):
-            # print(i,j,'{:.2f} {:.2f}'.format(LSOP9x9[i, j],np.transpose(LSZ[i, j])))
-            if LSOP9x9[i,j].real-LSZ[i,j].real >0.4 or LSOP9x9[i,j].imag-LSZ[i,j].imag > 0.4:
-
-                print(i,j,'{:0.2f} {:0.2f}'.
-                      format(LSOP9x9[i,j].real-LSZ[i,j].real,
-                             LSOP9x9[i,j].imag-LSZ[i,j].imag))
-
-
-# H_LS=LSX+LSY+LSZ
-
-# print(H_LS)
-
-
-# file_name='/Users/katukuri/Downloads/r1_9.out'
-# multiplicity, nstates, ref_energies, mrci_energies, mrci_energies_davidson_fixed, mrci_energies_davidson_relax = read_mrci_energies(file_name)
-#
-# print("Multiplicity: ",multiplicity)
-# mrci_rel_energies = mrci_energies-min(mrci_energies)
-# mrci_rel_energies_davidson_fixed = mrci_energies_davidson_fixed - min(mrci_energies_davidson_fixed)
-# mrci_rel_energies_davidson_relax = mrci_energies_davidson_relax - min(mrci_energies_davidson_relax)
-# ref_rel_energies=ref_energies-min(ref_energies)
-# for i in range(nstates):
-#     print('%4.8f  %4.4f  %4.8f  %4.4f  %4.4f  %4.4f  %4.4f  %4.4f'%(ref_energies[i], ref_rel_energies[i]*27.2114,
-#                                                                     mrci_energies[i], mrci_rel_energies [i]*27.2114,
-#                                                                     mrci_energies_davidson_fixed[i], mrci_rel_energies_davidson_fixed[i]*27.2114,
-#                                                                     mrci_energies_davidson_relax[i], mrci_rel_energies_davidson_relax[i]*27.2114))
-
-#D=read_noci_tm(f)
-#print(D)
-# wf=read_wfc(f)
-# print(wf)
-# lsop,soce=read_lsop_socE(f)
-# for n in range(len(soce)):
-#     print(soce[n])
+    E=read_mrci_energies('Example/m7_r19_correct.out')
+    print(E)
 
 

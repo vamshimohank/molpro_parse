@@ -476,6 +476,8 @@ def read_mrci_energies(file_name):
     """
     import numpy as np
     f=open(file_name, 'r')
+    DF=False
+    DR=False
     for line in f:
         if 'Multireference internally contracted CI' in line :
             for lin  in f:
@@ -510,10 +512,12 @@ def read_mrci_energies(file_name):
 
                                 if '!MRCI STATE ' in li and 'Energy' in li :
                                     mrci_energies.append(float(li.split()[4]))
-                                if 'Davidson, fixed reference' in li :
+                                if 'Davidson, fixed reference' in li  and DF == True :
                                     mrci_energies_davidson_fixed.append(float(li.split()[3]))
-                                if 'Davidson, relaxed reference' in li :
+                                    DF=True
+                                if 'Davidson, relaxed reference' in li and DF == True :
                                     mrci_energies_davidson_relax.append(float(li.split()[3]))
+                                    DR=True
 
                     mrci_energies=np.array(mrci_energies)
                     mrci_energies_davidson_fixed = np.array(mrci_energies_davidson_fixed)

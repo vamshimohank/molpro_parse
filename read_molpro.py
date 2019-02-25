@@ -365,36 +365,32 @@ def read_lsop_socE(filename,write_files=False):
                 #                                                                   # loop over block lines
             for n in range(LSOPstart_line[ns] + nbl * lop_block_rows + nbl * lop_block_gap,
                            LSOPstart_line[ns] + (nbl + 1) * lop_block_rows + nbl * lop_block_gap):
-                # print(n)
                 if f[n] != '\n' and f[n] != ' \n':  # not to consider empty lines
                     if f[n][2] != ' ':  # rows with real parts also contain No, and (j, mj) information (only No is now used)
                         for col in range(0, lsop_block_col_size):
-                            print('rel',n-1,f[n].split())
-                            # if f[n].split()[0] == '**' and temp_index_r < 145:
+                            # print('rel',n-1,f[n].split())
                             if f[n].split()[0] == '**' :
                                 if col == 0:
                                     temp_index_r= temp_index_r+1
-                                print(temp_index_r)
+                                # print(temp_index_r)
                                 LSOP[ns][temp_index_r - 1][col + nbl * lsop_bcs_d] = complex(float(f[n][19 + 11 * col:30 + +11 * col]),0)  # select only relevant part of the line and read
                             else :
-                                print(int(f[n].split()[0]) - 1)
+                                # print(int(f[n].split()[0]) - 1)
                                 LSOP[ns][int(f[n].split()[0]) - 1][col + nbl * lsop_bcs_d] = complex(
                                 float(f[n][19 + 11 * col:30 + +11 * col]),
                                 0)  # select only relevant part of the line and read
                     else:  # rows with imaginary parts have spaces in the beginning
                         for col in range(0, lsop_block_col_size):
-#                            print(LSOP[ns]) #[int(f[n-1])])
-                            print('imag',n-1-1,f[n - 1].split())
+                            # print('imag',n-1-1,f[n - 1].split())
                             if f[n-1].split()[0] == '**' :
-                            # if f[n-1].split()[0] == '**' and temp_index_i < 145:
                                 if col == 0:
                                     temp_index_i=temp_index_i+1
-                                print(temp_index_i-1)
+                                # print(temp_index_i-1)
                                 LSOP[ns][temp_index_i - 2][col + nbl * lsop_bcs_d] = \
                                 LSOP[ns][temp_index_i - 2][col + nbl * lsop_bcs_d] + \
                                 complex(0, float(f[n][19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number
                             else :
-                                print(int(f[n-1].split()[0]) - 1)
+                                # print(int(f[n-1].split()[0]) - 1)
                                 LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] = \
                                 LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] + \
                                 complex(0, float(f[n][19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number

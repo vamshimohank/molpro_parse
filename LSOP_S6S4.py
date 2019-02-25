@@ -43,7 +43,8 @@ print('LSXY.shape',LSXY.shape)
 #LSZ_org = LSMX('Example/m6_r9.xml','LSZ',1)
 #LSX_org = LSMX('Example/m6_r9.xml','LSX',1)
 
-f='Example/Na3Co2SbO6/soc.out'
+# f='Example/Na3Co2SbO6/soc.out'
+f='Example/Na2Co2TeO6/cas10_soc.xml'
 
 org_file='Example/all_r9.xml'
 LSZ_org = np.array(LS_tran_mat_elem(org_file,'LSZ',S1,S2))
@@ -63,8 +64,13 @@ LSOP_org=LSOP_org[0]
 print('LSOP_org.shape',LSOP_org.shape)
 print(M1*nstates,nstates*M2)
 
-ls32=LSOP_org[0:63:1, 63:108:1]
-ls32_ct = LSOP_org[63:108:1, 0:63:1]
+ls33=LSOP_org[0:63:1, 0:63:1]
+
+# print_mat(ls33)
+ls32=LSOP_org[0:63:1, 90:135:1]
+# print_mat(ls32)
+ls32_ct = LSOP_org[90:135:1, 0:63:1]
+get_diff(ls32,np.transpose(ls32_ct))
 
 #ls32_split=np.array(split(ls32,nstates,nstates)) # it looks like this is not working
 #print(ls32_split.shape)
@@ -74,7 +80,7 @@ temp=-(LSX+LSY)
 temp1=-np.conj(LSX+LSY)
 
 #get_diff(ls32_ct[0:9:1, 0:9:1],LSX+LSY)
-get_diff(ls32_ct[0:9:1, 0:9:1],temp1)
+# get_diff(ls32_ct[0:9:1, 0:9:1],temp1)
 #get_diff(ls32[0:9:1, 0:9:1],temp)
 # temp1 = -np.conj(temp)
 #temp1 = -np.conj(temp1)

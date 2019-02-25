@@ -2,7 +2,7 @@ import numpy as np
 from read_molpro import split
 from read_molpro import read_mrci_energies as rme
 
-from read_molpro import LS_matrix_elements_xml as LSMX
+from read_molpro import read_lsop_socE as r_lsop_E
 from read_molpro import lsop_read_mod
 
 from read_tran_ls import *
@@ -19,13 +19,13 @@ x_prefix=str(2*S1)+str(2*S2)+str(2*S1)+str(2*S2)+'_LSX.xml'
 y_prefix=str(2*S1)+str(2*S2)+str(2*S1)+str(2*S2)+'_LSY.xml'
 #
 file = 'Example/LSX/'+x_prefix
-LSX = np.array(LS_tran_mat_elem(file,'LSX',S1))
+LSX = np.array(LS_tran_mat_elem(file,'LSX',S1,S2))
 print('LSX.shape',LSX.shape)
 file = 'Example/LSY/'+y_prefix
-LSY = np.array(LS_tran_mat_elem(file,'LSY',S1))
+LSY = np.array(LS_tran_mat_elem(file,'LSY',S1,S2))
 print('LSY.shape',LSY.shape)
 file = 'Example/LSZ/'+z_prefix
-LSZ = np.array(LS_tran_mat_elem(file,'LSZ',S1))
+LSZ = np.array(LS_tran_mat_elem(file,'LSZ',S1,S2))
 print('LSZ.shape',LSZ.shape)
 # #file = 'Example/LSY/6646.xml'
 # file = 'Example/LSY/'+xy_prefix
@@ -43,23 +43,39 @@ print('LSXY.shape',LSXY.shape)
 #LSZ_org = LSMX('Example/m6_r9.xml','LSZ',1)
 #LSX_org = LSMX('Example/m6_r9.xml','LSX',1)
 
+f='Example/Na3Co2SbO6/soc.out'
+
 org_file='Example/all_r9.xml'
-LSZ_org = np.array(LS_tran_mat_elem(org_file,'LSZ',S1))
+LSZ_org = np.array(LS_tran_mat_elem(org_file,'LSZ',S1,S2))
+LSX_org = np.array(LS_tran_mat_elem(org_file,'LSX',S1,S2))
+LSY_org = np.array(LS_tran_mat_elem(org_file,'LSY',S1,S2))
 print("LSZ_org.shape =",LSZ_org.shape)
+print("LSX_org.shape =",LSX_org.shape)
+print("LSY_org.shape =",LSY_org.shape)
+
+LSXY_org=LSX_org+LSY_org
 
 # print_mat(LSZ_org)
 
-LSOP_org,SOC_E_org = lsop_read_mod(org_file)
+# LSOP_org,SOC_E_org = lsop_read_mod(org_file)
+LSOP_org,SOC_E_org = r_lsop_E(f)
+LSOP_org=LSOP_org[0]
+print('LSOP_org.shape',LSOP_org.shape)
 print(M1*nstates,nstates*M2)
 
 ls32=LSOP_org[0:63:1, 63:108:1]
 ls32_ct = LSOP_org[63:108:1, 0:63:1]
 
-ls32_split=np.array(split(ls32,nstates,nstates)) # it looks like this is not working
-print(ls32_split.shape)
+#ls32_split=np.array(split(ls32,nstates,nstates)) # it looks like this is not working
+#print(ls32_split.shape)
 
 
-get_diff(ls32[0:9:1, 0:9:1],LSX+LSY+LSZ)
+temp=-(LSX+LSY)
+temp1=-np.conj(LSX+LSY)
+
+#get_diff(ls32_ct[0:9:1, 0:9:1],LSX+LSY)
+get_diff(ls32_ct[0:9:1, 0:9:1],temp1)
+#get_diff(ls32[0:9:1, 0:9:1],temp)
 # temp1 = -np.conj(temp)
 #temp1 = -np.conj(temp1)
 # get_diff_3(LSX,np.transpose(LSY),temp1)

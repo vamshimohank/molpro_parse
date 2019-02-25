@@ -1,6 +1,6 @@
 
 
-def LS_tran_mat_elem(file,lstype,S):
+def LS_tran_mat_elem(file,lstype,S1,S2):
 
 
     au=27.2114

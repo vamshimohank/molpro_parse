@@ -478,7 +478,6 @@ def read_mrci_energies(file_name):
     f1=open(file_name, 'r')
     flines=f1.readlines()
     f1.close()
-    print(flines)
     f=open(file_name, 'r')
     for n1, line in enumerate(f):
         if 'Multireference internally contracted CI' in line :

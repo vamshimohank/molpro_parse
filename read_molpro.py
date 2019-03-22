@@ -373,11 +373,11 @@ def read_lsop_socE(filename,write_files=False):
                                 if col == 0:
                                     temp_index_r= temp_index_r+1
                                 # print(temp_index_r)
-                                LSOP[ns][temp_index_r - 1][col + nbl * lsop_bcs_d] = complex(float(f[n][19 + 11 * col:30 + +11 * col]),0)  # select only relevant part of the line and read
+                                LSOP[ns][temp_index_r - 1][col + nbl * lsop_bcs_d] = complex(float(f[n][19 + 11 * col:30 + 11 * col]),0)  # select only relevant part of the line and read
                             else :
                                 # print(int(f[n].split()[0]) - 1)
                                 LSOP[ns][int(f[n].split()[0]) - 1][col + nbl * lsop_bcs_d] = complex(
-                                float(f[n][19 + 11 * col:30 + +11 * col]),
+                                float(f[n][19 + 11 * col:30 + 11 * col]),
                                 0)  # select only relevant part of the line and read
                     else:  # rows with imaginary parts have spaces in the beginning
                         for col in range(0, lsop_block_col_size):
@@ -386,15 +386,27 @@ def read_lsop_socE(filename,write_files=False):
                                 if col == 0:
                                     temp_index_i=temp_index_i+1
                                 # print(temp_index_i-1)
-                                LSOP[ns][temp_index_i - 2][col + nbl * lsop_bcs_d] = \
-                                LSOP[ns][temp_index_i - 2][col + nbl * lsop_bcs_d] + \
+                                LSOP[ns][temp_index_i - 1][col + nbl * lsop_bcs_d] = \
+                                LSOP[ns][temp_index_i - 1][col + nbl * lsop_bcs_d] + \
                                 complex(0, float(f[n][19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number
+                                # if col+nbl*lsop_bcs_d in range(37,42,1) and temp_index_i-2 in range(96,102,1):
+                                #     print(temp_index_i-1,col+nbl*lsop_bcs_d,float(f[n][19 + 11 * col:30 + 11 * col]))
                             else :
                                 # print(int(f[n-1].split()[0]) - 1)
+                                # print(LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d])
                                 LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] = \
                                 LSOP[ns][int(f[n - 1].split()[0]) - 1][col + nbl * lsop_bcs_d] + \
                                 complex(0, float(f[n][19 + 11 * col:30 + 11 * col]))  # 19 symbol in line is the first for LSOP, every number is 11 symbols => 30 - end of the first number
         #
+        for nr in range(n_states):  # print to file
+            prnt = ''  # specify empty line, then 'collect' the whole row
+            if nr in [97,98]:
+                for nc in range(n_states):
+                    if nc in range(40,45,1) : #[40,41,42,43,44]:
+                # prnt += str(LSOP[ns].real[nr, nc]) + "+I(" + str(
+                #     LSOP[ns][nr][nc].imag) + ") "  # normal output, same way as in molpro
+
+                        print(nr,nc,LSOP[ns][nr][nc])
         if write_files :
             for nr in range(n_states):  # print to file
                 prnt = ''  # specify empty line, then 'collect' the whole row
@@ -655,5 +667,6 @@ if __name__ == '__main__':
 
     E=read_mrci_energies('Example/m7_r19_correct.out')
     print(E)
+
 
 

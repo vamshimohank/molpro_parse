@@ -7,6 +7,8 @@ from read_molpro import lsop_read_mod
 
 from read_tran_ls import *
 
+from read_tran_ls import LS_tran_mat_elem as read_tran_mat_ele
+
 nstates = 9
 S1 = 3
 S2 = 2
@@ -18,88 +20,82 @@ z_prefix=str(2*S1)+str(2*S2)+str(2*S2)+str(2*S2)+'_LSZ.xml'
 x_prefix=str(2*S1)+str(2*S2)+str(2*S1)+str(2*S2)+'_LSX.xml'
 y_prefix=str(2*S1)+str(2*S2)+str(2*S1)+str(2*S2)+'_LSY.xml'
 #
-file = 'Example/LSX/'+x_prefix
+file = 'Example/Na2Co2TeO6/LSX/'+x_prefix
+# print(file)
 LSX = np.array(LS_tran_mat_elem(file,'LSX',S1,S2))
 print('LSX.shape',LSX.shape)
-file = 'Example/LSY/'+y_prefix
+# print_mat(LSX)
+file = 'Example/Na2Co2TeO6/LSY/'+y_prefix
 LSY = np.array(LS_tran_mat_elem(file,'LSY',S1,S2))
 print('LSY.shape',LSY.shape)
-file = 'Example/LSZ/'+z_prefix
-LSZ = np.array(LS_tran_mat_elem(file,'LSZ',S1,S2))
+file = 'Example/Na2Co2TeO6/LSZ/'+z_prefix
+print(file)
+LSZ = np.array(read_tran_mat_ele(file,'LSZ',S1,S2))
 print('LSZ.shape',LSZ.shape)
-# #file = 'Example/LSY/6646.xml'
-# file = 'Example/LSY/'+xy_prefix
-# LSY = np.array(LS_tran_mat_elem(file,'LSY',S))
-# file = 'Example/LSZ/'+z_prefix
-# #file = 'Example/LSZ/6666.xml'
-# LSZ = np.array(LS_tran_mat_elem(file,'LSZ',S))
-#
-# print(LSZ[1][0])
 
 
 LSXY = LSX+LSY
 print('LSXY.shape',LSXY.shape)
 
-#LSZ_org = LSMX('Example/m6_r9.xml','LSZ',1)
-#LSX_org = LSMX('Example/m6_r9.xml','LSX',1)
-
-# f='Example/Na3Co2SbO6/soc.out'
 f='Example/Na2Co2TeO6/cas10_soc.xml'
 
-org_file='Example/all_r9.xml'
-LSZ_org = np.array(LS_tran_mat_elem(org_file,'LSZ',S1,S2))
-LSX_org = np.array(LS_tran_mat_elem(org_file,'LSX',S1,S2))
-LSY_org = np.array(LS_tran_mat_elem(org_file,'LSY',S1,S2))
-print("LSZ_org.shape =",LSZ_org.shape)
-print("LSX_org.shape =",LSX_org.shape)
-print("LSY_org.shape =",LSY_org.shape)
-
-LSXY_org=LSX_org+LSY_org
-
-# print_mat(LSZ_org)
-
-# LSOP_org,SOC_E_org = lsop_read_mod(org_file)
 LSOP_org,SOC_E_org = r_lsop_E(f)
 LSOP_org=LSOP_org[0]
-print('LSOP_org.shape',LSOP_org.shape)
-print(M1*nstates,nstates*M2)
+# print('LSOP_org.shape',LSOP_org.shape)
+# print(M1*nstates,nstates*M2)
 
 ls33=LSOP_org[0:63:1, 0:63:1]
 
 # print_mat(ls33)
-ls32=LSOP_org[0:63:1, 90:135:1]
-# print_mat(ls32)
-ls32_ct = LSOP_org[90:135:1, 0:63:1]
-get_diff(ls32,np.transpose(ls32_ct))
-
-#ls32_split=np.array(split(ls32,nstates,nstates)) # it looks like this is not working
-#print(ls32_split.shape)
 
 
-temp=-(LSX+LSY)
-temp1=-np.conj(LSX+LSY)
+ls32_ct = LSOP_org[63:108:1, 0:63:1]
+ls32=LSOP_org[0:63:1, 63:108:1]
+get_diff(ls32,np.transpose(np.conjugate(ls32_ct)),op='-')
+print('ls32.shape=',ls32.shape)
 
-#get_diff(ls32_ct[0:9:1, 0:9:1],LSX+LSY)
-# get_diff(ls32_ct[0:9:1, 0:9:1],temp1)
-#get_diff(ls32[0:9:1, 0:9:1],temp)
-# temp1 = -np.conj(temp)
-#temp1 = -np.conj(temp1)
-# get_diff_3(LSX,np.transpose(LSY),temp1)
-# get_diff_3(LSY,LSX,temp1)
-# get_diff(LSXY,ls32_split[8])
-# print_mat(ls32,ls32_ct)
+ls32_split=np.array(blockshaped(ls32,9,9))
 
-# get_fac(ls32,ls32_ct)
-# print(temp.shape,temp1.shape)
-# for i in range(temp.shape[0]):
-#     for j in range(temp.shape[1]):
-#         print(i+63,j,temp[i][j],temp1[j][i])
-# LSOP_org_split=np.array(split(LSOP_org,nstates,nstates))
+
+# temp_fac= get_fac(ls32_split[0],ls32_split[6],p=False)
+# print(temp_fac)
+
+new_ls32=np.zeros((M1*nstates,M2*nstates),dtype=np.complex128)
+print(new_ls32.shape)
+new_ls32_split=np.array(blockshaped(new_ls32,nstates,nstates))
 #
-# print(LSOP_org_split.shape)
-#
-# a=[]
-# for i in range(0,M,1):
+b=[]
+for i in range(0,M2,1):
+    fac=get_fac(ls32_split[0],ls32_split[i*(M2+1)])
+    b.append(fac)
+    new_ls32_split[i*(M2+1)]=LSXY/b[i]
+# print(b)
+
+a=[]
+for i in range(0,M2,1):
+    fac=get_fac(ls32_split[M2],ls32_split[M2+i*(M2+1)])
+    a.append(fac)
+    new_ls32_split[M2+i*(M2+1)]=LSZ/a[i]
+# print(a)
+
+bs=[]
+for i in range(0,M2,1):
+    fac=get_fac(ls32_split[0],np.conjugate(ls32_split[2*M2+i*(M2+1)]))
+    bs.append(fac)
+    new_ls32_split[2*M2+i*(M2+1)]=np.conjugate(LSXY)/bs[i]
+# print(bs)
+# get_fac(ls32_split[0],ls32_split[34],p=True)
+
+
+for i in range(M2):
+    # print(new_ls32[i*9:i*9+9, i*9:i*9+9].shape,new_ls32_split[i*(M2+1)].shape)
+    new_ls32[i*9:i*9+9, i*9:i*9+9] = new_ls32_split[i*(M2+1)]
+    new_ls32[(i+1)*9:(i+1)*9+9, i*9:i*9+9] = new_ls32_split[M2+i*(M2+1)]
+    new_ls32[(i+2)*9:(i+2)*9+9, i*9:i*9+9] = new_ls32_split[2*M2+i*(M2+1)]
+
+new_ls32_ct=np.transpose(np.conjugate(new_ls32))
+# get_diff(new_ls32,np.transpose(np.conjugate(new_ls32_ct)),op='-',p=True)
+
 #     a.append(get_fac(LSOP_org_split[0],LSOP_org_split[i*(M+1)]))
 #
 # print(a)
